@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "es6",
+    "allowJs": true,
+    "removeComments": true,
+    "target": "es5",
+    "lib": ["es2015", "es2016", "es2017", "dom"],
+    "experimentalDecorators": true,
+    "disableSizeLimit": true,
+    "sourceMap": true,
+    "outDir": "../dist",
+    "jsx": "react",
+    "allowSyntheticDefaultImports": true
+  },
+  "exclude": ["node_modules"],
+  "include": ["./**/*"],
+  "files": ["index.tsx"]
+}
