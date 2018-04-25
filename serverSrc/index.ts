@@ -1,4 +1,5 @@
 import * as express from 'express';
+import * as expressStatic from 'express-static-gzip';
 import db from './model/index';
 import * as handlers from './controller/index';
 import * as path from 'path';
@@ -13,7 +14,7 @@ app.use(bodyParser.json());
 
 app.use(handlers.logger);
 
-app.use(express.static('./static'));
+app.use('/', expressStatic('./static'));
 app.get(/^\/((?!api).)/, (req, res) =>
   res.sendFile(path.resolve(__dirname, 'static/index.html')));
 

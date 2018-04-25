@@ -42,3 +42,4 @@ export default class Router implements IRouter {
     delete this.listeners[ident];
   }
 }
+

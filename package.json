@@ -4,7 +4,7 @@
   "description": "A simple time clock for tracking employee hours",
   "main": "index.js",
   "scripts": {
-    "build:server": "tsc -p serverSrc",
+    "build:server": "tsc",
     "serve": "nodemon dist"
   },
   "repository": "https://github.com/jamesmanone/time-clock.git",
@@ -15,6 +15,7 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.2",
     "express": "^4.16.3",
+    "express-static-gzip": "^0.3.2",
     "jsonwebtoken": "^8.2.1",
     "mongoose": "^5.0.14"
   },

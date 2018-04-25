@@ -5,6 +5,7 @@ import IModel from 'Model/index';
 import connect from 'state';
 import Route from 'Router/Route';
 
+import Home from './Home/index';
 import Login from './Login/index';
 import Employees from './Employees/index';
 import AddUser from './AddUser/index';
@@ -18,6 +19,12 @@ class Routes extends React.PureComponent<Props> {
   render() {
     return (
       <div className="container">
+        <Route
+          to="/"
+          component={Home}
+          exact
+        />
+
         <Route
           to="/login"
           component={Login}

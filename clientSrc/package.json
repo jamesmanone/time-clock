@@ -1,11 +1,14 @@
 {
   "name": "time-clock-client",
+  "sideEffects": [
+    "*.css"
+  ],
   "version": "1.0.0",
   "description": "client side for time-clock",
   "main": "index.ts",
   "author": "James Martin",
   "scripts": {
-    "build": "NODE_ENV=production webpack --config webpack.config.prod.js",
+    "build": "NODE_ENV=production webpack -p --config webpack.config.prod.js --optimize-minimize",
     "build:dev": "webpack",
     "build:watch": "webpack --watch"
   },
@@ -19,8 +22,9 @@
     "@types/reactstrap": "^5.0.21",
     "@types/shortid": "^0.0.29",
     "axios": "^0.18.0",
-    "babel-minify-webpack-plugin": "^0.3.1",
     "bootstrap": "^4.1.0",
+    "compression-webpack-plugin": "^1.1.11",
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "font-awesome": "^4.7.0",
     "html-webpack-plugin": "^3.2.0",
     "jwt-client": "^0.2.1",
