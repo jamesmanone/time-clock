@@ -141,6 +141,6 @@ export const endShift = (req: Request, res: Response): void => {
 
 export const logger = (req: Request, res: Response, next: NextFunction): void => {
   const { ip, path, method } = req;
-  console.log(`${ip} requested ${method} ${path}`);
+  console.log(`${new Date().toUTCString()}: ${ip} requested ${method} ${path}`);
   next();
 }

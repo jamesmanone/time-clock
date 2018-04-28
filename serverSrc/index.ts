@@ -4,17 +4,21 @@ import db from './model/index';
 import * as handlers from './controller/index';
 import * as path from 'path';
 import * as bodyParser from 'body-parser';
+import * as http from 'http';
 
 db();
 
 const app = express();
-app.set('trust proxy', ['uniquelocal', '192.168.5.1'])
+const server = new http.Server(app);
+export default server;
+
+app.set('trust proxy', ['loopback', '192.168.5.2'])
 
 app.use(bodyParser.json());
 
 app.use(handlers.logger);
 
-app.use('/', expressStatic('./static'));
+app.use('/', expressStatic(path.resolve(__dirname, 'static')));
 app.get(/^\/((?!api).)/, (req, res) =>
   res.sendFile(path.resolve(__dirname, 'static/index.html')));
 
@@ -29,5 +33,5 @@ app.delete('/api/employees/:id', handlers.deleteEmployee);
 app.post('/api/shifts/start', handlers.newShift);
 app.post('/api/shifts/end', handlers.endShift);
 
-app.listen(process.env.port || 5000, () =>
+server.listen(process.env.port || 5000, () =>
   console.log(`Server Started at ${new Date().toLocaleTimeString()}`));
