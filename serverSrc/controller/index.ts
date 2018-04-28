@@ -4,6 +4,7 @@ import * as jwt from 'jsonwebtoken';
 import * as model from '../model/Employee';
 import * as User from '../model/User'
 import { Employee } from '../model/Employee';
+import io from '../sockets/index';
 
 type EmployeeList = string[]|string;
 
@@ -108,7 +109,11 @@ export const deleteEmployee = (req: Request, res: Response): void => {
 const newShifts = (employees: string[], res: Response): void => {
   let p: Promise<model.IEmployee>[] = employees.map(employee => model.startShift(employee));
   Promise.all(p)
-    .then(employees => res.send(employees))
+    .then(employees => {
+      employees.map(employee =>
+          io.emit('start shift', {employee: employee._id, shift: employee.activeShift}));
+      res.send(employees)
+    })
     .catch(() => res.sendStatus(400));
 
 };
@@ -119,6 +124,7 @@ export const newShift = (req: Request, res: Response): void => {
 
   model.startShift(employees as string)
     .then((employee: model.IEmployee) => {
+      io.emit('start shift', {employee: employee._id, shift: employee.activeShift});
       res.json(employee);
     })
     .catch(() => res.sendStatus(400));
@@ -127,7 +133,13 @@ export const newShift = (req: Request, res: Response): void => {
 const endShifts = (shifts: ShiftId[], res: Response): void => {
   const p: Promise<model.IEmployee>[] = shifts.map(shift => model.endShift(shift.employee, shift.shift));
   Promise.all(p)
-    .then(employees => res.send(employees))
+    .then(employees => {
+      employees.map(employee => {
+        const shift = employee.activeShift;
+        io.emit('end shift', {employee: shift._id, shift});
+      });
+      res.send(employees);
+    })
     .catch(() => res.sendStatus(400));
 }
 
@@ -135,7 +147,11 @@ export const endShift = (req: Request, res: Response): void => {
   const shifts: ShiftId|ShiftId[] = req.body.shifts;
   if(shifts instanceof Array) return endShifts(shifts, res);
   model.endShift(shifts.employee, shifts.shift)
-    .then(employee => res.send(employee))
+    .then(employee => {
+      const shift = employee.activeShift;
+      io.emit('end shift', {employee: shift._id, shift});
+      res.send(employee)
+    })
     .catch(() => res.sendStatus(400));
 }
 
