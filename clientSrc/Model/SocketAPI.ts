@@ -38,7 +38,7 @@ export default class SocketAPI implements ISocketAPI {
   };
 
   startShift = (_id: string, start?: Date): void => {
-    this.socket.emit('startShift', JSON.stringify({_id, start}));
+    this.socket.emit('startShift', {_id, start});
   };
 
   endShift = (_id: string, end?: Date): void => {
@@ -46,8 +46,6 @@ export default class SocketAPI implements ISocketAPI {
   };
 
   private onStart = (data: any): void => {
-    data = JSON.parse(data);
-    console.log(data)
     const shift = new Shift(data.shift);
     const employee = this.model.findById(data.employee);
     if(!employee.activeShift) {
@@ -59,8 +57,6 @@ export default class SocketAPI implements ISocketAPI {
   };
 
   private onEnd = (data): void => {
-    // data = JSON.parse(data);
-
     const shift = new Shift(data.shift);
     const employee = this.model.findById(data._id);
     if(employee.activeShift) {

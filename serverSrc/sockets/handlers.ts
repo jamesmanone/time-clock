@@ -26,16 +26,15 @@ export const authenticate = (socket: ISocket, data: {token:string}, fn) => {
 }
 
 export const startShift = (socket: SocketIO.Socket) => (data) => {
-  data = JSON.parse(data);
   console.log(data._id)
   Employee.startShift(data._id)
     .then(employee => {
       if(!employee) socket.emit('404');
-      else io.emit('start shift', JSON.stringify({
+      else io.emit('start shift', {
         employee: employee._id,
         shift: employee.activeShift,
         updatedAt: employee.updatedAt
-      }));
+      });
     })
     .catch(e => socket.emit('400'));
 }
