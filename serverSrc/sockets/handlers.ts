@@ -1,7 +1,7 @@
 import * as User from '../model/User';
 import * as Employee from '../model/Employee';
 import * as jwt from 'jsonwebtoken';
-import io from './index';
+import io from '../index';
 
 const secret: string = 'jumppinjehosaphat';
 
@@ -25,20 +25,26 @@ export const authenticate = (socket: ISocket, data: {token:string}, fn) => {
   }
 }
 
-export const startShift = (socket: SocketIO.Socket) => (data: {_id: string, start?: string}) => {
-  Employee.startShift(data._id, data.start)
+export const startShift = (socket: SocketIO.Socket) => (data) => {
+  data = JSON.parse(data);
+  console.log(data._id)
+  Employee.startShift(data._id)
     .then(employee => {
       if(!employee) socket.emit('404');
-      else io.emit('start shift', {employee: employee._id, shift: employee.activeShift});
+      else io.emit('start shift', JSON.stringify({
+        employee: employee._id,
+        shift: employee.activeShift,
+        updatedAt: employee.updatedAt
+      }));
     })
     .catch(e => socket.emit('400'));
 }
 
-export const endShift = (socket: SocketIO.Socket) => (data: {_id: string, end?: string}) => {
+export const endShift = (socket: SocketIO.Socket) => (data) => {
   Employee.stopShift(data._id, data.end)
-    .then(shift => {
+    .then(({_id, shift, updatedAt}) => {
       if(!shift) socket.emit('404');
-      else io.emit('end shift', {employee: shift._id, shift});
+      else io.emit('end shift', {_id, updatedAt, shift});
     })
     .catch(e => socket.emit('400'));
 }

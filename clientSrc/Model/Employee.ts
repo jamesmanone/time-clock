@@ -37,7 +37,7 @@ export default class Employee implements IEmployee {
     this._id = employee._id || shortid.generate();
     this.createdAt = employee.createdAt ? new Date(employee.createdAt) : new Date();
     this.updatedAt = employee.updatedAt ? new Date(employee.updatedAt) : new Date();
-    this.activeShift = this.shifts.filter(i => !i.end)[0] || null;
+    this.activeShift = employee.activeShift ? new Shift(employee.activeShift) : null;
     const weekStart = Employee.weekStart().getTime();
     this.thisWeek = this.shifts.filter(i => i.start.getTime() > weekStart);
   }

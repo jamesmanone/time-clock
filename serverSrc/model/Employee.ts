@@ -38,9 +38,14 @@ const employee: Schema = new Schema({
     type: Number,
     required: true
   }
-}, {timestamps: true});
+}, {
+  timestamps: true,
+  toJSON: {
+    virtuals: true
+  }
+});
 
-employee.virtual('activeShift').get(() => {
+employee.virtual('activeShift').get(function() {
   let active = this.shifts.filter(i => !i.end);
   if(active.length > 1) throw Error();
   return active[0];
@@ -48,9 +53,11 @@ employee.virtual('activeShift').get(() => {
 
 export interface IEmployee extends Document {
   name: string;
-  shifts: Types.Array<IShift>;
+  shifts: Types.DocumentArray<IShift>;
   hourlyRate: number;
   activeShift: IShift;
+  updatedAt: Date;
+  createdAt: Date;
 }
 
 export const Employee: Model<IEmployee> = model<IEmployee>('employee', employee);
@@ -69,15 +76,20 @@ export const startShift = (employee: string, start?: string|Date): Promise<IEmpl
       employee.save();
       return employee;
     })
+    .catch(e => {
+      console.error(e.message);
+      throw e;
+    })
 
-export const stopShift = (employee: string, end?: string|Date): Promise<{shift:IShift,_id:string}> =>
+export const stopShift = (employee: string, end?: string|Date): Promise<{shift:IShift,_id:string,updatedAt:Date}> =>
   Employee.findById(employee)
     .then(employee => {
-      if(!(employee && employee.activeShift)) return null;
+      if(!(employee && employee.activeShift)) throw Error();
       end = end ? new Date(end) : new Date();
-      const shift = employee.activeShift;
-      employee.activeShift.end = end;
-      return {shift, _id: employee._id};
+      const shift = employee.shifts.id(employee.activeShift._id);
+      shift.end = end;
+      employee.save();
+      return {shift, _id: employee._id, updatedAt: employee.updatedAt};
     })
 
 

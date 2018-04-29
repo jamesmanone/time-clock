@@ -3,7 +3,7 @@ import * as React from 'react';
 import Model from './Model/index';
 import { Listener } from './Model/index';
 
-const context = React.createContext(new Model());
+const context = React.createContext(null);
 
 export const Consumer = context.Consumer;
 export const Provider = context.Provider;
@@ -41,7 +41,7 @@ class Connect extends React.PureComponent<any, any> {
     while(this.subscriptions.length) this.model.unsubscribe(this.subscriptions.pop());
   }
 
-  subscribe = (propName:string) => (prop:any) => this.setState({[propName]: prop});
+  subscribe = (propName:string) => (prop:any) => this.setState({ [propName]: prop });
 
   render() {
     return (

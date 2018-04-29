@@ -14,7 +14,7 @@ interface Props {
 type State = {duration: string, week: string};
 
 
-export default class EmployeeLine extends React.PureComponent<Props> {
+export default class EmployeeLine extends React.Component<Props> {
   state: State;
   timer: number;
 

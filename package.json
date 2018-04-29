@@ -6,7 +6,7 @@
   "scripts": {
     "build:server": "tsc -p ./",
     "build:watch": "build:serve --watch",
-    "serve": "nodemon dist/index.js",
+    "serve": "nodemon dist/index.js --ignore clientSrc --ignore serverSrc",
     "start": "run-p build:watch serve"
   },
   "repository": "https://github.com/jamesmanone/time-clock.git",

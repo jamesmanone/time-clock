@@ -4,7 +4,7 @@ import * as jwt from 'jsonwebtoken';
 import * as model from '../model/Employee';
 import * as User from '../model/User'
 import { Employee } from '../model/Employee';
-import io from '../sockets/index';
+import io from '../index';
 
 type EmployeeList = string[]|string;
 
@@ -124,7 +124,11 @@ export const newShift = (req: Request, res: Response): void => {
 
   model.startShift(employees as string)
     .then((employee: model.IEmployee) => {
-      io.emit('start shift', {employee: employee._id, shift: employee.activeShift});
+      io.emit('start shift', {
+        employee: employee._id,
+        shift: employee.activeShift,
+        updatedAt: employee.updatedAt
+      });
       res.json(employee);
     })
     .catch(() => res.sendStatus(400));
@@ -136,7 +140,8 @@ const endShifts = (shifts: ShiftId[], res: Response): void => {
     .then(employees => {
       employees.map(employee => {
         const shift = employee.activeShift;
-        io.emit('end shift', {employee: shift._id, shift});
+        const { _id, updatedAt } = employee;
+        io.emit('end shift', {_id, updatedAt, shift});
       });
       res.send(employees);
     })

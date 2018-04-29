@@ -4,6 +4,8 @@ import * as shortid from 'shortid';
 import Employee, { IEmployee } from './Employee';
 import Shift, { IShift } from './Shift';
 
+import SocketAPI from './SocketAPI';
+
 
 export type Listener<T> = (e:T)=>void;
 
@@ -47,6 +49,7 @@ export default class Model implements IModel {
   private employeesListeners: ListenerMap<Employee[]> = {};
   private loginListeners: ListenerMap<boolean> = {};
   private user: string;
+  private SocketAPI;
 
   private readonly urls = {
     shifts: '/api/shifts',
@@ -60,6 +63,7 @@ export default class Model implements IModel {
       const token = JWT.remember() as any;
       if(token && JWT.validate(token)) {
         this.isLoggedIn = true;
+        this.SocketAPI = new SocketAPI(this);
       } else throw Error();
     } catch(e) {
       this.isLoggedIn = false;
@@ -103,6 +107,7 @@ export default class Model implements IModel {
           fn(true);
           this.isLoggedIn = true;
           this.notifyLoginSubscribers();
+          this.SocketAPI = new SocketAPI(this);
         }
       })
       .catch(e => {
@@ -118,9 +123,16 @@ export default class Model implements IModel {
     JWT.forget();
     this.employees = {};
     onLogout();
+    this.SocketAPI = null;
   };
 
-  private put = (employee: IEmployee, force?: boolean): boolean => {
+  findById = (id: string): Employee => {
+    // debugger;
+    return this.employees[id] ? this.employees[id].doc.clone() : null;
+  }
+
+
+  private put = (employee: Employee, force?: boolean): boolean => {
     const { _id } = employee;
     if(this.employees[_id] && (this.shouldUpdate(employee) || force)) {
       this.employees[_id].doc = new Employee(employee);
@@ -128,6 +140,15 @@ export default class Model implements IModel {
       return true;
     }
     return false;
+  }
+
+  putFromWS = (employee: Employee): void => {
+    const { _id } = employee;
+    if(this.employees[_id] && (this.shouldUpdate(employee))) {
+      this.employees[_id].doc = employee;
+      this.notifySubscribers(_id);
+      this.notifySubscribers();
+    }
   }
 
   private pull = (id: string): void => {
@@ -242,7 +263,7 @@ export default class Model implements IModel {
     let didUpdate: boolean;
     (axios as any).get(`${this.urls.employees}`, this.getConfig())
       .then(({data}) => {
-        data.employees.map((employee: IEmployee) => {
+        data.employees.map((employee: Employee) => {
           if(this.employees[employee._id]) {
             didUpdate = this.put(employee) || didUpdate;
           } else {
@@ -310,6 +331,8 @@ export default class Model implements IModel {
 
     const employee = this.employees[id].doc;
 
+    if(employee && this.SocketAPI && this.SocketAPI.active) return this.SocketAPI.startShift(employee._id);
+
     // Optimistic update
     let shiftId;
     try {
@@ -363,6 +386,8 @@ export default class Model implements IModel {
 
     const shiftId = shifts.shift;
     const employee = this.employees[shifts.employee].doc;
+
+    if(employee && this.SocketAPI && this.SocketAPI.active) return this.SocketAPI.endShift(employee._id);
 
     // Optimistic update
     employee.endShift();
