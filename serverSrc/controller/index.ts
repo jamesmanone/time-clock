@@ -86,23 +86,36 @@ export const addEmployee = (req: Request, res: Response): void => {
   }
   const e = new model.Employee(employee);
   e.save();
+  io.emit('new employee', e.toJSON());
   res.send(e.toJSON());
 };
 
 export const updateEmployee = (req: Request, res: Response): void => {
   const employee: Partial<model.IEmployee> = req.body;
   model.updateEmployee(employee)
-    .then(employee => {
-      if(!employee) throw Error();
-      res.send(employee);
+    .then(record => {
+      if(!record) throw Error();
+      let e = {...(record as any)._doc, shifts: undefined};
+      io.emit('update employee', e);
+      res.send(record);
     })
-    .catch(() => res.sendStatus(400));
+    .catch((e) => {
+      res.sendStatus(400);
+      console.log(e.message)
+    });
 }
 
 export const deleteEmployee = (req: Request, res: Response): void => {
   const employee: string = req.params!.id;
   model.removeEmployee(employee)
-    .then((done: boolean) => done ? res.sendStatus(200) : res.sendStatus(400))
+    .then((done: boolean) => {
+      if(done) {
+        res.sendStatus(200);
+        io.emit('delete employee', employee);
+      } else {
+        res.sendStatus(404);
+      }
+    })
     .catch(() => res.sendStatus(400));
 }
 

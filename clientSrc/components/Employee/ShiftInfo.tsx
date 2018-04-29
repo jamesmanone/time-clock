@@ -27,7 +27,6 @@ const ShiftInfo = (props: Props) => (
         <tbody>
           {props.employee.fourWeekInfo().map(week => (
             <tr key={week.key}>
-              {console.log(week)}
               <td>{week.key}</td>
               <td>{week.hours}</td>
               <td>{`\$${week.pay}`}</td>

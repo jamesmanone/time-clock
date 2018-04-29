@@ -15,20 +15,14 @@ const app = express();
 const server = new http.Server(app);
 
 const socket = require('socket.io')(server);
-// socket.on('connection', s => {
-//   console.log('socket connection');
-//   socket.on('startShift', socketHandler.startShift(s));
-//   socket.on('endShift', socketHandler.endShift(s));
-//   // socket.on('disconnected', ()=> console.log(`${socket.user} disconnected`));
-// })
 
 require('socketio-auth')(socket, {
   authenticate: socketHandler.authenticate,
+  disconnect: socketHandler.disconnect,
   postAuthenticate: (socket) => {
-    console.log(`${socket.user.username} connected via WebSocket`);
+    console.log(`${new Date().toUTCString()}: ${socket.user.username} connected via WebSocket`);
     socket.on('startShift', socketHandler.startShift(socket));
     socket.on('endShift', socketHandler.endShift(socket));
-    socket.on('disconnected', ()=> console.log(`${socket.user} disconnected`));
   }
 });
 export default socket;

@@ -26,7 +26,6 @@ export const authenticate = (socket: ISocket, data: {token:string}, fn) => {
 }
 
 export const startShift = (socket: SocketIO.Socket) => (data) => {
-  console.log(data._id)
   Employee.startShift(data._id)
     .then(employee => {
       if(!employee) socket.emit('404');
@@ -46,4 +45,8 @@ export const endShift = (socket: SocketIO.Socket) => (data) => {
       else io.emit('end shift', {_id, updatedAt, shift});
     })
     .catch(e => socket.emit('400'));
+}
+
+export const disconnect = (socket: ISocket) => {
+  console.log(`${new Date().toUTCString()}: ${socket.user.username} disconnected`);
 }

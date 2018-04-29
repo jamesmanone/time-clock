@@ -1,4 +1,5 @@
 import Model from './index';
+import Employee from './Employee';
 import Shift, { IShift } from './Shift';
 import io from 'socket.io-client';
 import * as JWT from 'jwt-client';
@@ -20,6 +21,8 @@ export default class SocketAPI implements ISocketAPI {
     this.socket = io();
     this.socket.on('start shift', this.onStart);
     this.socket.on('end shift', this.onEnd);
+    this.socket.on('update employee', this.onUpdateEmployee);
+    this.socket.on('new employee', this.onNewEmployee);
     this.socket.on('connect', this.authenticate);
     this.socket.on('authenticated', this.authenticated);
     this.socket.on('disconnect', this.onDisconnect);
@@ -75,5 +78,27 @@ export default class SocketAPI implements ISocketAPI {
     this.active = false;
     this.model.updateWS();
     console.log('Websocket connection lost');
+  }
+
+  private onNewEmployee = (data: Employee): void => {
+    this.model.upsertFromWS(new Employee (data));
+  }
+
+  private onUpdateEmployee = (data: Employee): void => {
+    const { _id } = data;
+    const record = this.model.findById(_id);
+
+    // Hackish way to grab missing employee
+    if(!record) return this.model.unsubscribe(this.model.getEmployee(_id)((e)=>undefined));
+    // if((record.updatedAt as Date).getTime() === new Date(data.updatedAt).getTime()) return;
+
+    Object.keys(data).map(k => {
+      if(k !== 'shifts') record[k] = data[k]
+    });
+    this.model.upsertFromWS(record);
+  }
+
+  private onDeleteEmployee = (data: string) => {
+    this.model.deleteFromWS(data);
   }
 }

@@ -70,6 +70,15 @@ export default class Model implements IModel {
     } catch(e) {
       this.isLoggedIn = false;
     }
+
+    // refresh employees when page becomes visible
+    window.document.addEventListener('visibilitychange', this.visibilityChange);
+  }
+
+  private visibilityChange = () => {
+    if(document.visibilityState !== 'hidden') {
+      this.refreshEmployees();
+    }
   }
 
   getLogin = (fn: Listener<boolean>):string => {
@@ -173,7 +182,17 @@ export default class Model implements IModel {
         doc: employee,
         listeners: {}
       };
+      this.notifySubscribers();
     } else this.putFromWS(employee);
+  }
+
+  deleteFromWS = (id: string): void => {
+    if(this.employees[id]) {
+      this.employees[id].doc = undefined;
+      this.notifySubscribers(id);
+      delete this.employees[id];
+      this.notifySubscribers();
+    }
   }
 
   private pull = (id: string): void => {

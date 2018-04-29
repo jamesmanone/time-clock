@@ -112,6 +112,8 @@ export const updateEmployee = (employee: Partial<IEmployee>): Promise<IEmployee>
   Employee.findById(employee._id)
     .then((e: IEmployee) => {
       if(!employee) throw Error();
+      delete employee.shifts;
+      employee.updatedAt = new Date();
       Object.keys(employee).map((field: string) => e[field] = employee[field]);
       e.save();
       return e;
