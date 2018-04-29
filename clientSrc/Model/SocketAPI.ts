@@ -35,6 +35,7 @@ export default class SocketAPI implements ISocketAPI {
   authenticated = (): void => {
     console.log('authenticated');
     this.active = true;
+    this.model.updateWS();
   };
 
   startShift = (_id: string, start?: Date): void => {
@@ -72,6 +73,7 @@ export default class SocketAPI implements ISocketAPI {
 
   private onDisconnect = () => {
     this.active = false;
+    this.model.updateWS();
     console.log('Websocket connection lost');
   }
 }

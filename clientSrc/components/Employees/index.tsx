@@ -16,18 +16,27 @@ export interface Props extends RouterProps {
   startShift: Model["startShift"];
   endShift: Model["endShift"];
   refresh: Model["refreshEmployees"];
+  wsAvailable: boolean;
 }
 
-class Employees extends React.PureComponent<Props> {
-  timer: number;
+type State = {timer:number}
 
-  constructor(props: Props) {
-    super(props);
-    this.timer = window.setInterval(this.props.refresh, 60000)
+class Employees extends React.PureComponent<Props> {
+  state: State = {timer: null};
+
+
+  // Sets 1/min polling if no ws, disables if ws connection
+  static getDerivedStateFromProps(next: Props, state: State) {
+    if(!next.wsAvailable && !(state && state.timer)) {
+      return {timer: window.setInterval(next.refresh, 60000)}
+    } else if (next.wsAvailable && state && state.timer) {
+      window.clearInterval(state.timer);
+      return {timer: null};
+    } else return {};
   }
 
   componentWillUnmount() {
-    window.clearInterval(this.timer);
+    if(this.state.timer) window.clearInterval(this.state.timer);
   }
 
   closeAdd = (): void => this.props.navigate('/employees');
@@ -54,7 +63,10 @@ class Employees extends React.PureComponent<Props> {
 }
 
 export default connect(
-  (model: IModel) => ({employees: model.getEmployees}),
+  (model: IModel) => ({
+    employees: model.getEmployees,
+    wsAvailable: model.getWSStatus
+  }),
   (model: IModel) => ({
     startShift: model.startShift,
     endShift: model.endShift,

@@ -20,6 +20,7 @@ export interface IModel {
   login: (credentials:{username:string, password:string}, fn:(success:boolean)=>void)=>void;
   logout: (onLogout: ()=>void)=>void;
   getLogin: (fn:Listener<boolean>)=>string;
+  getWSStatus: (fn:Listener<boolean>)=>string;
   unsubscribe: (id:string)=>void;
   refreshEmployees: ()=>void;
   refreshEmployee: (id:string)=>void;
@@ -47,6 +48,7 @@ export default class Model implements IModel {
   private isLoggedIn: boolean;
   private employees: EmployeeMap = {};
   private employeesListeners: ListenerMap<Employee[]> = {};
+  private WSListeners: ListenerMap<boolean> = {};
   private loginListeners: ListenerMap<boolean> = {};
   private user: string;
   private SocketAPI;
@@ -80,6 +82,19 @@ export default class Model implements IModel {
   private notifyLoginSubscribers = () => {
     Object.values(this.loginListeners).map((fn: Listener<boolean>) => fn(this.isLoggedIn));
   }
+
+  getWSStatus = (fn: Listener<boolean>):string => {
+    const ident = shortid.generate();
+    this.WSListeners[ident] = fn;
+    fn(this.SocketAPI && this.SocketAPI.active);
+    return ident;
+  };
+
+  private notifyWSSubscribers = () => {
+    Object.values(this.WSListeners).map((fn: Listener<boolean>) => fn(this.SocketAPI && this.SocketAPI.active));
+  }
+
+  updateWS = () => this.notifyWSSubscribers();
 
   private getConfig = () => ({
     headers: {
@@ -149,6 +164,16 @@ export default class Model implements IModel {
       this.notifySubscribers(_id);
       this.notifySubscribers();
     }
+  }
+
+  upsertFromWS = (employee: Employee): void => {
+    const { _id } = employee;
+    if(!this.employees[_id]) {
+      this.employees[_id] = {
+        doc: employee,
+        listeners: {}
+      };
+    } else this.putFromWS(employee);
   }
 
   private pull = (id: string): void => {
@@ -409,6 +434,7 @@ export default class Model implements IModel {
   unsubscribe = (id:string): void => {
     if(this.employeesListeners[id]) delete this.employeesListeners[id];
     else if(this.loginListeners[id]) delete this.loginListeners[id];
+    else if(this.WSListeners[id]) delete this.WSListeners[id];
     else {
       Object.values(this.employees).map(em => (em.listeners[id] && delete em.listeners[id]));
     }
