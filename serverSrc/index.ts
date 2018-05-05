@@ -23,6 +23,7 @@ require('socketio-auth')(socket, {
     console.log(`${new Date().toUTCString()}: ${socket.user.username} connected via WebSocket`);
     socket.on('startShift', socketHandler.startShift(socket));
     socket.on('endShift', socketHandler.endShift(socket));
+    socket.on('updateShift', socketHandler.updateShift(socket));
   }
 });
 export default socket;
@@ -47,9 +48,10 @@ app.patch('/api/employees/:id', handlers.updateEmployee);
 app.delete('/api/employees/:id', handlers.deleteEmployee);
 app.post('/api/shifts/start', handlers.newShift);
 app.post('/api/shifts/end', handlers.endShift);
+app.patch('/api/shifts/:employee/:shift', handlers.updateShift);
 
 
 
 
-server.listen(process.env.port || 5000, () =>
+server.listen(process.env.PORT || 5000, () =>
   console.log(`Server Started at ${new Date().toLocaleTimeString()}`));

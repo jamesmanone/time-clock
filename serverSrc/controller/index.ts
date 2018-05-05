@@ -13,7 +13,7 @@ interface ShiftId {
   shift: string;
 }
 
-const secret: string = 'jumppinjehosaphat'
+const secret: string = process.env.SECRET || 'jumppinjehosaphat'
 
 type ShiftList = ShiftId|ShiftId[];
 
@@ -169,6 +169,21 @@ export const endShift = (req: Request, res: Response): void => {
       const shift = employee.activeShift;
       io.emit('end shift', {employee: shift._id, shift});
       res.send(employee)
+    })
+    .catch(() => res.sendStatus(400));
+}
+
+export const updateShift = (req: Request, res: Response): void => {
+  const { employee } = req.params;
+  const shift = req.body;
+  if(!employee && shift) {
+    res.sendStatus(400);
+    return;
+  }
+  model.updateShift(employee, shift)
+    .then(shift => {
+      res.json(shift);
+      io.emit('update shift', {employee, shift});
     })
     .catch(() => res.sendStatus(400));
 }

@@ -104,6 +104,21 @@ export const endShift = (employee: string, id: string): Promise<IEmployee> =>
     });
 
 
+export const updateShift = (employee: string, shift: IShift): Promise<IShift> =>
+  Employee.findById(employee)
+    .then(employee => {
+      if(!employee) throw Error();
+      const record = employee.shifts.id(shift._id);
+
+      if(!shift) throw Error();
+      record.start = shift.start || record.start;
+      record.end = shift.end || record.end;
+      employee.save();
+
+      return record;
+    })
+
+
 export const addEmployee = (employee: Partial<IEmployee>): Promise<IEmployee> =>
   new Employee(employee).save();
 

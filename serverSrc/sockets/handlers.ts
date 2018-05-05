@@ -3,7 +3,7 @@ import * as Employee from '../model/Employee';
 import * as jwt from 'jsonwebtoken';
 import io from '../index';
 
-const secret: string = 'jumppinjehosaphat';
+const secret: string = process.env.SECRET || 'jumppinjehosaphat';
 
 interface ISocket extends SocketIO.Socket {
   user: User.IUser
@@ -47,6 +47,18 @@ export const endShift = (socket: SocketIO.Socket) => (data) => {
     .catch(e => socket.emit('400'));
 }
 
+export const updateShift = (socket: SocketIO.Socket) => (data) => {
+  const { employee, shift } = data;
+  if(!(employee && shift)) return socket.emit('400');
+  Employee.updateShift(employee, shift)
+    .then(shift => {
+      if(!shift) return socket.emit('404');
+      io.emit('update shift', {employee, shift});
+    })
+    .catch(e => socket.emit('400'));
+}
+
 export const disconnect = (socket: ISocket) => {
-  console.log(`${new Date().toUTCString()}: ${socket.user.username} disconnected`);
+  if(socket && socket.user && socket.user.username)
+    console.log(`${new Date().toUTCString()}: ${socket.user.username} disconnected`);
 }
