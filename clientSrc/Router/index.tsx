@@ -17,6 +17,8 @@ export const withRouter = (Child: React.ComponentClass<any>) =>
     private router: Router;
     private subscription: string;
 
+    static displayName = `WithRouter(${Child.displayName || Child.name})`
+
     componentWillUnmount() {
       this.unsubscribe();
     }

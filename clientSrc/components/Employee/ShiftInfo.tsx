@@ -10,13 +10,14 @@ import Employee from 'Model/Employee';
 
 interface Props {
   employee: Employee;
+  navigate: (route: String)=>void;
 }
 
 const ShiftInfo = (props: Props) => (
   <Card>
     <CardTitle>Last Four Weeks</CardTitle>
     <CardBody>
-      <Table>
+      <Table hover>
         <thead>
           <tr>
             <th>Weeks ago</th>
@@ -26,8 +27,10 @@ const ShiftInfo = (props: Props) => (
         </thead>
         <tbody>
           {props.employee.fourWeekInfo().map(week => (
-            <tr key={week.key}>
-              <td>{week.key}</td>
+            <tr key={week.key} onClick={
+              ()=>props.navigate(`/employee/${props.employee._id}/week${week.key}`)
+            }>
+              <td>{week.key || 'This Week'}</td>
               <td>{week.hours}</td>
               <td>{`\$${week.pay}`}</td>
             </tr>

@@ -55,7 +55,7 @@ export default class UpdatableField extends React.PureComponent<Props> {
       </Col>
     )
     else if(this.props.id == 'hourly-rate') return (
-      <Col sm="5" md="3" className='form-group'>
+      <Col md="5" className='form-group'>
         <Label for={this.props.id}><strong>{this.props.label}</strong></Label>
         <input
           className="form-control-plaintext"
@@ -66,7 +66,7 @@ export default class UpdatableField extends React.PureComponent<Props> {
       </Col>
     );
     return (
-      <Col sm="5" md="3" className='form-group'>
+      <Col md="5" className='form-group'>
         <Label for={this.props.id}><strong>{this.props.label}</strong></Label>
         <input
           className="form-control-plaintext"

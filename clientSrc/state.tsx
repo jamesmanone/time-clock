@@ -29,6 +29,8 @@ class Connect extends React.PureComponent<any, any> {
   private model: Model;
   private methods: methodMap;
 
+  static displayName = `Connect(${Child.displayName || Child.name})`
+
   state: {[key:string]:any} = {};
 
   componentDidMount() {}

@@ -79,7 +79,44 @@ export default class Employee implements IEmployee {
     return Employee.hoursToString(hours)
   }
 
+  // recursive binary search
+  getLimit = (limit: Date, shifts: Shift[]=[...this.shifts]): number => {
+    const pivotIndex = Math.floor(shifts.length/2);
+    if(!pivotIndex) return 0;  // end of array
 
+    const data = shifts[pivotIndex].start;
+
+    if(
+        limit.getTime() <= data.getTime() &&
+        limit.getTime() >= shifts[pivotIndex-1].start.getTime()
+    ) return pivotIndex;
+    else if(limit.getTime() > data.getTime())
+      return this.getLimit(limit, shifts.slice(pivotIndex+1)) + pivotIndex+1;
+    else return this.getLimit(limit, shifts.slice(0, pivotIndex-1));
+  }
+
+  getStartEndIndex = (startDate: Date, endDate: Date): {start:number,end:number} => {
+    let start = this.getLimit(startDate),
+        end = this.getLimit(endDate, this.shifts.slice(start)) + 1;
+    if(end >= this.shifts.length) end = this.shifts.length - 1;
+    return { start, end };
+  }
+
+  getPastWeekShifts = (back=0): Shift[] => {
+    const endDate = Employee.weekStart();
+    endDate.setDate(endDate.getDate()+6-(back*7));
+    const startDate = Employee.weekStart(endDate);
+    endDate.setHours(23);
+    const { start, end } = this.getStartEndIndex(startDate, endDate);
+    return this.shifts.slice(start, end);
+  }
+
+  getDatesForBackWeek = (back=0): {start:Date,end:Date} => {
+    const end = Employee.weekStart();
+    end.setDate(end.getDate()+6-(back*7));
+    const start = Employee.weekStart(end);
+    return {start, end};
+  }
 
   payForWeek = (weekEnd?: Date): string => {
     let hours: number = weekEnd ? this.hoursForWeek(weekEnd) : this.hoursForWeek();

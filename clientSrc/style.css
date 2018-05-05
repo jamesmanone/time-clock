@@ -2,6 +2,10 @@ body {
   background-color: #dfdcdd;
 }
 
+div.table.table-hover tbody tr {
+  cursor: pointer;
+}
+
 nav.navbar {
   margin-bottom: 2rem;
 }
@@ -131,5 +135,10 @@ table.table tbody td {
   table.table thead th,
   table.table tbody td {
     font-size: 1.2rem;
+  }
+
+  div.form-group label {
+    text-align: center;
+    margin: auto;
   }
 }

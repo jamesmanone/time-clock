@@ -56,7 +56,7 @@ class EmployeePage extends React.PureComponent<Props> {
             />
           </div>
         </form>
-        <ShiftInfo employee={this.props.employee} />
+        <ShiftInfo employee={this.props.employee} navigate={this.props.navigate}/>
       </div>
     )
     return <div />

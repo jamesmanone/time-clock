@@ -10,6 +10,7 @@ import Login from './Login/index';
 import Employees from './Employees/index';
 import AddUser from './AddUser/index';
 import EmployeePage from './Employee/index';
+import WeekDetail from './WeekDetail/index';
 
 interface Props {
   isLoggedIn: boolean;
@@ -46,8 +47,14 @@ class Routes extends React.PureComponent<Props> {
         />
 
         <Route
-          to={/\/employee\/([^/]+)\/?/}
+          to={/\/employee\/([^/]+)\/?$/}
           component={EmployeePage}
+          canActivate={this.props.isLoggedIn}
+        />
+
+        <Route
+          to={/\/employee\/[^/]+\/week[0-9]+/}
+          component={WeekDetail}
           canActivate={this.props.isLoggedIn}
         />
       </div>
