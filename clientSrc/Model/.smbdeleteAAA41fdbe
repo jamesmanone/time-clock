@@ -34,9 +34,6 @@ export default class Employee implements IEmployee {
     this.shifts = employee.shifts ?
       employee.shifts.map(s => new Shift(s)) :
       [];
-    this.shifts.sort((a: Shift, b: Shift) =>
-      a.start.getTime() - b.start.getTime()
-    )
     this._id = employee._id || shortid.generate();
     this.createdAt = employee.createdAt ? new Date(employee.createdAt) : new Date();
     this.updatedAt = employee.updatedAt ? new Date(employee.updatedAt) : new Date();
@@ -82,20 +79,17 @@ export default class Employee implements IEmployee {
   }
 
   getLimit = (limit: Date) => {
-    const limitT = limit.getTime()
-    let hi = this.shifts.length,
+    let hi = this.shifts.length - 1,
         lo = 0;
 
     while(hi>=lo) {
-      if(hi-lo < 1) return hi;
       const mid = Math.floor((hi+lo)/2);
       if(mid == 0) return 0;
-
       if(
-        limitT <= this.shifts[mid].start.getTime() &&
-        limitT >= this.shifts[mid-1].start.getTime()
+        limit.getTime() <= this.shifts[mid].start.getTime() &&
+        limit.getTime() >= this.shifts[mid-1].start.getTime()
       ) return mid;
-      else if(limitT > this.shifts[mid].start.getTime())
+      else if(limit.getTime() > this.shifts[mid].start.getTime())
         lo = mid + 1;
       else hi = mid - 1;
     }
@@ -104,7 +98,7 @@ export default class Employee implements IEmployee {
 
   getStartEndIndex = (startDate: Date, endDate: Date): {start:number,end:number} => {
     let start = this.getLimit(startDate),
-        end = this.getLimit(endDate);
+        end = start + this.getLimit(endDate);
     if(end > this.shifts.length) end = this.shifts.length;
     return { start, end };
   }

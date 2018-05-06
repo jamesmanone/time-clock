@@ -18,17 +18,6 @@ interface Props {
   updateHourly: (newRate:string)=>void;
 }
 
-type State = {timer:number; thisWeek:string};
-
-// class ShiftInfo extends React.PureComponent<Props> {
-//   state: State;
-//
-//   constructor(props: Props) {
-//     super(props);
-//
-//   }
-// }
-
 const ShiftInfo = (props: Props) => (
   <Card>
     <form className='form-inline'>
