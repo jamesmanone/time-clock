@@ -27,7 +27,7 @@ nav.navbar {
   margin-top: 3rem;
   border: 1px solid #555;
   box-shadow: 1px 3px 1px 1px rgba(0, 0, 0, 0.25);
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .form-header h3 {
@@ -60,7 +60,7 @@ form div.form-group input.form-control:focus {
 
 form div.form-group label {
   position: absolute;
-  bottom: -0.5rem;
+  bottom: 0rem;
   left: 0.1rem;
   text-align: left;
   transition: font-size .15s ease-in-out,
@@ -99,6 +99,7 @@ td div.button-group button.btn {
 
 div.modal-content {
   background-color: rgba(0, 0, 0, 0);
+  margin-top: 4rem;
 }
 
 table.table.table-hover thead tr th,

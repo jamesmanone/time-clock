@@ -10,6 +10,7 @@ import {
 import Employee from 'Model/Employee';
 
 import UpdatableField from './UpdatableField';
+import CurrentWeek from './CurrentWeek';
 
 interface Props {
   employee: Employee;
@@ -58,15 +59,24 @@ const ShiftInfo = (props: Props) => (
           </tr>
         </thead>
         <tbody>
-          {props.employee.fourWeekInfo().map(week => (
-            <tr key={week.key} onClick={
-              ()=>props.navigate(`/employee/${props.employee._id}/week${week.key}`)
-            }>
-              <td>{week.key || 'This Week'}</td>
-              <td>{week.hours}</td>
-              <td>{`\$${week.pay}`}</td>
-            </tr>
-          ))}
+          {props.employee.fourWeekInfo().map(week => {
+            if(week.key == 0) return (
+              <CurrentWeek
+                employee={props.employee}
+                navigate={props.navigate}
+                key={0}
+              />
+            );
+            else return (
+              <tr key={week.key} onClick={
+                ()=>props.navigate(`/employee/${props.employee._id}/week${week.key}`)
+              }>
+                <td>{week.key}</td>
+                <td>{week.hours}</td>
+                <td>{`\$${week.pay}`}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </Table>
     </CardBody>
