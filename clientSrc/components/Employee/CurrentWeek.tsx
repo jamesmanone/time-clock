@@ -40,7 +40,11 @@ export default class CurrentWeek extends React.PureComponent<Props> {
   componentDidUpdate() {
     if(this.state.timer && !this.props.employee.activeShift) {
       window.clearInterval(this.state.timer);
-      this.setState({timer: null});
+      this.setState({
+        timer: null,
+        duration: this.props.employee.readableHoursForWeek(),
+        payForWeek: this.props.employee.payForWeek()
+      });
     }
     else if(this.state.timer == null && this.props.employee.activeShift) {
       this.setState({timer: this.setTimer()});
