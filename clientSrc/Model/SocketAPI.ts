@@ -59,6 +59,7 @@ export default class SocketAPI implements ISocketAPI {
     const employee = this.model.findById(data.employee);
     if(!employee.activeShift) {
       employee.shifts.push(shift);
+      employee.thisWeek.push(shift);
       employee.activeShift = shift;
       employee.updatedAt = new Date(data.updatedAt);
       this.model.putFromWS(employee);

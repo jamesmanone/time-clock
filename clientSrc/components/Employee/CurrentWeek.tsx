@@ -17,7 +17,7 @@ export default class CurrentWeek extends React.PureComponent<Props> {
 
   constructor(props: Props) {
     super(props);
-    let timer: number;
+    let timer: number = null;
     if(this.props.employee.activeShift) timer = this.setTimer();
     this.state = {
       timer,
@@ -38,11 +38,11 @@ export default class CurrentWeek extends React.PureComponent<Props> {
   }
 
   componentDidUpdate() {
-    if(this.state.timer && ! this.props.employee.activeShift) {
+    if(this.state.timer && !this.props.employee.activeShift) {
       window.clearInterval(this.state.timer);
       this.setState({timer: null});
     }
-    else if(!this.state.timer && this.props.employee.activeShift) {
+    else if(this.state.timer == null && this.props.employee.activeShift) {
       this.setState({timer: this.setTimer()});
     }
   }
