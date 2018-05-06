@@ -17,7 +17,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, '../dist/static'),
     publicPath: '/',
-    filename: 'js/app.[hash].js'
+    filename: 'js/app.js'
   },
   plugins: [
     new webpack.DefinePlugin(GLOBALS),

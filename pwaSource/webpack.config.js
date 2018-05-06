@@ -14,7 +14,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, '../dist/static'),
     publicPath: '/',
-    filename: 'serviceworker.[hash].js'
+    filename: 'serviceworker.js'
   },
   plugins: [
     new webpack.DefinePlugin(GLOBALS),

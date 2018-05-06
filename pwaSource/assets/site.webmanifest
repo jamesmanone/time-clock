@@ -1,6 +1,7 @@
 {
     "name": "TimeClock",
     "short_name": "TimeClock",
+    "start_url": "/",
     "icons": [
         {
             "src": "/pwa/android-chrome-192x192.png",
