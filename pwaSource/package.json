@@ -1,0 +1,17 @@
+{
+  "name": "pwaSource",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "James Martin",
+  "scripts": {
+    "build": "webpack -p",
+    "watch": "webpack -p --watch"
+  },
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "ts-loader": "^4.2.0",
+    "webpack": "^4.7.0",
+    "webpack-cli": "^2.1.3"
+  }
+}
