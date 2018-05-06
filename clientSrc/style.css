@@ -122,6 +122,11 @@ table.table tbody td {
   font-size: .7rem;
 }
 
+div.form-group label {
+  text-align: center;
+  margin: auto;
+}
+
 
 
 @media screen and (min-width: 480px) {
@@ -135,10 +140,5 @@ table.table tbody td {
   table.table thead th,
   table.table tbody td {
     font-size: 1.2rem;
-  }
-
-  div.form-group label {
-    text-align: center;
-    margin: auto;
   }
 }

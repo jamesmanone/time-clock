@@ -16,12 +16,13 @@ interface Props {
   start: Date;
   end: Date;
   shifts: Shift[];
+  updateShift: (shift: Shift)=>void;
 }
 
 const WeekTable = (props: Props) => (
   <Card>
     <div>
-      <h3>{props.name}</h3><br />
+      <h3>{props.name}</h3>
       <h4>
         {props.start.toLocaleDateString()} - {props.end.toLocaleDateString()}
       </h4>
@@ -37,8 +38,12 @@ const WeekTable = (props: Props) => (
           </tr>
         </thead>
         <tbody>
-          {(props.shifts && props.shifts.map(shift =>
-            <ShiftLine shift={shift} key={shift._id} />
+          {(props.shifts && props.shifts.reverse().map(shift =>
+            <ShiftLine
+              shift={shift}
+              key={shift._id}
+              updateShift={props.updateShift}
+            />
           ))}
         </tbody>
       </Table>

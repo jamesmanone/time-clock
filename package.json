@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build:server": "tsc -p ./",
-    "build:watch": "build:serve --watch",
+    "build:watch": "yarn run build:server --watch",
     "serve": "nodemon dist/index.js --ignore clientSrc --ignore serverSrc",
     "start": "run-p build:watch serve"
   },
@@ -40,5 +40,8 @@
     "typescript": "^2.8.1",
     "webpack": "^4.5.0",
     "webpack-cli": "^2.0.14"
+  },
+  "resolutions": {
+    "@types/mongoose": "5.0.9"
   }
 }

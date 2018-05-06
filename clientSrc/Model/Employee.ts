@@ -38,8 +38,7 @@ export default class Employee implements IEmployee {
     this.createdAt = employee.createdAt ? new Date(employee.createdAt) : new Date();
     this.updatedAt = employee.updatedAt ? new Date(employee.updatedAt) : new Date();
     this.activeShift = employee.activeShift ? new Shift(employee.activeShift) : null;
-    const weekStart = Employee.weekStart().getTime();
-    this.thisWeek = this.shifts.filter(i => i.start.getTime() > weekStart);
+    this.thisWeek = this.getPastWeekShifts();
   }
 
   private static weekStart(date?: Date) {
@@ -79,26 +78,28 @@ export default class Employee implements IEmployee {
     return Employee.hoursToString(hours)
   }
 
-  // recursive binary search
-  getLimit = (limit: Date, shifts: Shift[]=[...this.shifts]): number => {
-    const pivotIndex = Math.floor(shifts.length/2);
-    if(!pivotIndex) return 0;  // end of array
+  getLimit = (limit: Date) => {
+    let hi = this.shifts.length - 1,
+        lo = 0;
 
-    const data = shifts[pivotIndex].start;
-
-    if(
-        limit.getTime() <= data.getTime() &&
-        limit.getTime() >= shifts[pivotIndex-1].start.getTime()
-    ) return pivotIndex;
-    else if(limit.getTime() > data.getTime())
-      return this.getLimit(limit, shifts.slice(pivotIndex+1)) + pivotIndex+1;
-    else return this.getLimit(limit, shifts.slice(0, pivotIndex-1));
+    while(hi>=lo) {
+      const mid = Math.floor((hi+lo)/2);
+      if(mid == 0) return 0;
+      if(
+        limit.getTime() <= this.shifts[mid].start.getTime() &&
+        limit.getTime() >= this.shifts[mid-1].start.getTime()
+      ) return mid;
+      else if(limit.getTime() > this.shifts[mid].start.getTime())
+        lo = mid + 1;
+      else hi = mid - 1;
+    }
+    return hi;
   }
 
   getStartEndIndex = (startDate: Date, endDate: Date): {start:number,end:number} => {
     let start = this.getLimit(startDate),
-        end = this.getLimit(endDate, this.shifts.slice(start)) + 1;
-    if(end >= this.shifts.length) end = this.shifts.length - 1;
+        end = start + this.getLimit(endDate);
+    if(end > this.shifts.length) end = this.shifts.length;
     return { start, end };
   }
 

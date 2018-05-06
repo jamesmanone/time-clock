@@ -4,18 +4,39 @@ import {
   CardBody,
   CardTitle,
   CardText,
-  Table
+  Table,
+  Col
 } from 'reactstrap';
 import Employee from 'Model/Employee';
+
+import UpdatableField from './UpdatableField';
 
 interface Props {
   employee: Employee;
   navigate: (route: String)=>void;
+  updateName: (newName:string)=>void;
+  updateHourly: (newRate:string)=>void;
 }
 
 const ShiftInfo = (props: Props) => (
   <Card>
-    <CardTitle>Last Four Weeks</CardTitle>
+    <form className='form-inline'>
+      <div className="form-row">
+        <UpdatableField
+          id="name"
+          value={props.employee.name}
+          update={props.updateName}
+          label="Name"
+        />
+        <Col md="4" />
+        <UpdatableField
+          id="hourly-rate"
+          value={props.employee.hourlyRate.toFixed(2)}
+          update={props.updateHourly}
+          label="Hourly Rate"
+        />
+      </div>
+    </form>
     <CardBody>
       <Table hover>
         <thead>

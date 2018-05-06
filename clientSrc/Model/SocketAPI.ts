@@ -21,6 +21,7 @@ export default class SocketAPI implements ISocketAPI {
     this.socket = io();
     this.socket.on('start shift', this.onStart);
     this.socket.on('end shift', this.onEnd);
+    this.socket.on('update shift', this.onUpdate);
     this.socket.on('update employee', this.onUpdateEmployee);
     this.socket.on('new employee', this.onNewEmployee);
     this.socket.on('connect', this.authenticate);
@@ -49,6 +50,10 @@ export default class SocketAPI implements ISocketAPI {
     this.socket.emit('endShift', {_id, end});
   };
 
+  updateShift = (employee: Employee, shift: Shift): void => {
+    this.socket.emit('updateShift', {employee: employee._id, shift});
+  }
+
   private onStart = (data: any): void => {
     const shift = new Shift(data.shift);
     const employee = this.model.findById(data.employee);
@@ -72,6 +77,17 @@ export default class SocketAPI implements ISocketAPI {
       employee.updatedAt = new Date(data.updatedAt);
       this.model.putFromWS(employee);
     }
+  }
+
+  private onUpdate = (data): void => {
+    // debugger;
+    const shift = new Shift(data.shift);
+    const employee = this.model.findById(data.employee);
+    employee.shifts = employee.shifts.map(s => {
+      if(s._id === shift._id) return shift;
+      return s;
+    });
+    this.model.putFromWS(employee);
   }
 
   private onDisconnect = () => {

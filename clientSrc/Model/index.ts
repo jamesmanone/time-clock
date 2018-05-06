@@ -51,7 +51,7 @@ export default class Model implements IModel {
   private WSListeners: ListenerMap<boolean> = {};
   private loginListeners: ListenerMap<boolean> = {};
   private user: string;
-  private SocketAPI;
+  private SocketAPI: SocketAPI;
 
   private readonly urls = {
     shifts: '/api/shifts',
@@ -448,6 +448,30 @@ export default class Model implements IModel {
         this.put(employee);
         this.notifySubscribers();
       });
+  }
+
+  updateShift = (shift: ShiftId, start: Date, end: Date): void => {
+    const employee = this.employees[shift.employee].doc.clone();
+    const record = employee.shifts.filter(s => s._id === shift.shift)[0];
+    if(!record) return console.error('Shift not found');
+
+    record.start = start;
+    record.end = end;
+
+    if(this.SocketAPI && this.SocketAPI.active)
+      return this.SocketAPI.updateShift(employee, record);
+
+    (axios as any).patch(`${this.urls.shifts}/${shift.employee}/${shift.shift}`)
+      .then(({data}) => {
+        const shift = new Shift(data.shift);
+        if(!(
+          shift.start.getTime() == start.getTime() &&
+          shift.end.getTime() == end.getTime()
+        )) return console.error('something went wrong');
+        employee.updatedAt = new Date();
+        this.put(employee);
+        this.notifySubscribers();
+      })
   }
 
   unsubscribe = (id:string): void => {

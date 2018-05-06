@@ -4,6 +4,8 @@ import Employee from 'Model/Employee';
 import Model, { IModel } from 'Model/index';
 import { RouterProps } from 'Router/index';
 
+import { Breadcrumb, BreadcrumbItem } from 'reactstrap';
+
 import UpdatableField from './UpdatableField';
 import ShiftInfo from './ShiftInfo';
 
@@ -37,26 +39,33 @@ class EmployeePage extends React.PureComponent<Props> {
     this.props.updateEmployee(employee);
   }
 
+  navToEmployees = (evt: React.MouseEvent<HTMLAnchorElement>): void => {
+    evt.preventDefault();
+    this.props.navigate('/employees');
+  }
+
   render() {
     if(this.props.employee) return (
       <div>
-        <form className='form-inline'>
-          <div className="form-row">
-            <UpdatableField
-              id="name"
-              value={this.props.employee.name}
-              update={this.updateName}
-              label="Name"
-            />
-            <UpdatableField
-              id="hourly-rate"
-              value={this.props.employee.hourlyRate.toFixed(2)}
-              update={this.updateHourly}
-              label="Hourly Rate"
-            />
-          </div>
-        </form>
-        <ShiftInfo employee={this.props.employee} navigate={this.props.navigate}/>
+        <Breadcrumb>
+          <BreadcrumbItem>
+            <a
+              href="/employees"
+              onClick={this.navToEmployees}
+            >
+              Employees
+            </a>
+          </BreadcrumbItem>
+          <BreadcrumbItem active>
+            {this.props.employee.name.split(' ')[0]}
+          </BreadcrumbItem>
+        </Breadcrumb>
+        <ShiftInfo
+          employee={this.props.employee}
+          navigate={this.props.navigate}
+          updateName={this.updateName}
+          updateHourly={this.updateHourly}
+        />
       </div>
     )
     return <div />
