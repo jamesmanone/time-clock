@@ -81,20 +81,19 @@ export default class Employee implements IEmployee {
     return Employee.hoursToString(hours)
   }
 
-  getLimit = (limit: Date, lo=0) => {
+  getLimit = (limit: Date, lo?: number) => {
+    if(!lo) lo = 0;
     const limitT = limit.getTime()
     let hi = this.shifts.length;
-        
+
     if(hi === 0) return 0;
-        
-    if(hi === 1) {
-      if(this.shifts[0].start.getTime() < limitT) return 1;
-      else return lo;
-    }
 
     while(hi>lo) {
-      const mid = Math.round((hi+lo)/2);
-      
+      const mid = Math.floor((hi+lo)/2);
+      if(mid === 0) {
+        if(this.shifts[0].start.getTime() < limitT && this.shifts.length) return 1;
+        else return 0;
+      }
 
       if(
         limitT <= this.shifts[mid].start.getTime() &&

@@ -10,15 +10,15 @@ import './assets/safari-pinned-tab.svg';
 import './assets/site.webmanifest';
 import './assets/ipad-splash-landscape.png';
 import './assets/ipad-splash.png';
-import './assets/iphone-splash.png';
+import './assets/iPhone-splash.png';
 
-const V = 1.03
-const CACHE_NAME = 'timeclock-v1.03';
+
+const v = 1.001
+const CACHE_NAME = 'timeclock-v1.001';
 const urls = [
   '/',
   '/js/app.js',
-  '/css/style.css',
-  '/favicon.ico'
+  '/css/style.css'
 ];
 
 self.addEventListener('activate', evt => {

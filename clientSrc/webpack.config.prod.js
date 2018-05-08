@@ -10,7 +10,7 @@ const GLOBALS = {
 };
 
 module.exports = {
-  devtool: 'none',
+  devtool: 'source-map',
   entry: path.resolve(__dirname, 'index'),
   target: 'web',
   mode: 'production',
