@@ -12,8 +12,8 @@ import './assets/ipad-splash-landscape.png';
 import './assets/ipad-splash.png';
 import './assets/iphone-splash.png';
 
-const V = 1.01
-const CACHE_NAME = 'timeclock-v1.01';
+const V = 1.03
+const CACHE_NAME = 'timeclock-v1.03';
 const urls = [
   '/',
   '/js/app.js',

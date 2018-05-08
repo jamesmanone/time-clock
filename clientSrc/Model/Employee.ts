@@ -108,8 +108,8 @@ export default class Employee implements IEmployee {
   }
 
   getStartEndIndex = (startDate: Date, endDate: Date): {start:number,end:number} => {
-    let start = this.getLimit(startDate),
-        end = this.getLimit(endDate, start);
+    let start = this.getLimit(startDate);
+    let end = this.getLimit(endDate);
     if(end > this.shifts.length) end = this.shifts.length;
     return { start, end };
   }
