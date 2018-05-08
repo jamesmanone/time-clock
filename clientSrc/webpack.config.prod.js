@@ -36,9 +36,9 @@ module.exports = {
     new Compressor({
       test: /\.js$|\.css$/,
       threshold: 10240,
-      deleteOriginalAssets: true
+      deleteOriginalAssets: false
     }),
-    new ExtractText('css/[hash].css')
+    new ExtractText('css/style.css')
   ],
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
